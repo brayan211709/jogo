@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Master Futebol Simulator Pro+</title>
+    <style>
+        :root {
+            --bg: #0a0a16;
+            --card: #12122b;
+            --gold: #f0c040;
+            --green: #2ecc40;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --text: #e0e0e0;
+            --text2: #999;
+            --border: #2a2a4a;
+            --radius: 14px
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 10px
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        header {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 15px 20px;
+            text-align: center;
+            border: 1px solid var(--border)
+        }
+
+        header h1 {
+            font-size: 1.5em;
+            color: var(--gold);
+            font-weight: 900
+        }
+
+        .sub {
+            font-size: .7em;
+            color: var(--text2)
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center
+        }
+
+        nav button {
+            padding: 8px 12px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: .75em;
+            transition: .2s;
+            white-space: nowrap
+        }
+
+        nav button:hover,
+        nav button.ativo {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold)
+        }
+
+        .tela {
+            display: none;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .tela.ativa {
+            display: flex
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 15px;
+            border: 1px solid var(--border)
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: var(--gold)
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 9px;
+            border: 2px solid var(--border);
+            background: #111125;
+            color: #fff;
+            font-size: .85em;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 9px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: .85em;
+            text-align: center
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: #000
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: #000
+        }
+
+        .btn-red {
+            background: var(--red);
+            color: #fff
+        }
+
+        .btn-blue {
+            background: var(--blue);
+            color: #fff
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: .7em
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .8em
+        }
+
+        th,
+        td {
+            padding: 6px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border)
+        }
+
+        th {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: .7em;
+            background: var(--card)
+        }
+
+        .tabela-scroll {
+            max-height: 350px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border)
+        }
+
+        .info-box {
+            background: #1a2a1a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px
+        }
+
+        .grupo-card {
+            background: #1a1a30;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px
+        }
+
+        .grupo-card h4 {
+            color: var(--gold);
+            margin-bottom: 5px
+        }
+
+        .resultado-partida {
+            background: #1a1a30;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin: 3px 0;
+            font-size: .8em
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: .65em;
+            margin-left: 5px
+        }
+
+        .badge-green {
+            background: #2ecc40;
+            color: #000
+        }
+
+        .badge-red {
+            background: #e74c3c;
+            color: #fff
+        }
+
+        .resumo-temporada {
+            background: #1a1a30;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 2px solid var(--gold)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <h1>⚽ MASTER FUTEBOL SIMULATOR PRO+</h1>
+            <div class="sub">Modo Carreira apenas com Liga</div>
+        </header>
+        <nav id="nav-menu">
+            <button class="ativo" data-tela="tela-jogo">⚡ Jogo Rápido</button>
+            <button data-tela="tela-carreira">📈 Carreira</button>
+            <button data-tela="tela-liga">🏆 Liga</button>
+            <button data-tela="tela-torneio">🥇 Torneio</button>
+            <button data-tela="tela-editor">✏️ Editor</button>
+            <button data-tela="tela-criar">🛠️ Criar Time</button>
+        </nav>
+
+        <div class="tela ativa" id="tela-jogo">
+            <div class="card">
+                <h3>⚡ Jogo Rápido</h3>
+                <div class="grid-2">
+                    <div><label>🏠 Casa</label><select id="jr-casa"></select></div>
+                    <div><label>✈️ Visitante</label><select id="jr-visitante"></select></div>
+                </div>
+                <button class="btn btn-gold" onclick="jogarRapido()" style="width:100%;margin-top:5px;">▶️
+                    JOGAR</button>
+                <div id="jr-resultado"></div>
+            </div>
+        </div>
+
+        <div class="tela" id="tela-carreira">
+            <div class="card" id="carreira-inicio">
+                <h3>📈 Modo Carreira</h3>
+                <select id="carreira-time-select"></select>
+                <button class="btn btn-gold" onclick="iniciarCarreira()" style="width:100%;margin-top:5px;">✅ Iniciar
+                    Carreira</button>
+            </div>
+            <div id="carreira-painel" style="display:none;">
+                <div class="card">
+                    <h3>📅 Temporada <span id="carreira-temporada-num">1</span></h3>
+                    <div class="grid-3">
+                        <div><strong>Time:</strong><br><span id="carreira-nome"></span></div>
+                        <div><strong>Orçamento:</strong><br>€<span id="carreira-orcamento"></span></div>
+                        <div><strong>Rodada:</strong><br><span id="carreira-rodada"></span>/<span
+                                id="carreira-total-rodadas"></span></div>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
+                        <button class="btn btn-green btn-sm" onclick="simularProximoJogo()">▶️ Próximo Jogo</button>
+                        <button class="btn btn-gold btn-sm" onclick="simularTemporadaCompleta()">⚡ Temporada
+                            Inteira</button>
+                        <button class="btn btn-blue btn-sm" onclick="abrirTransferencias()">💱 Transferências</button>
+                        <button class="btn btn-red btn-sm" onclick="encerrarTemporada()">🏁 Encerrar</button>
+                        <button class="btn btn-gold btn-sm" onclick="proximaTemporada()" id="btn-proxima-temporada"
+                            style="display:none;">▶️ Próxima Temporada</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>📊 Tabela da Liga</h3>
+                    <div class="tabela-scroll" id="carreira-tabela"></div>
+                </div>
+                <div class="card" id="carreira-resumo" style="display:none;">
+                    <h3>📋 Resumo da Temporada</h3>
+                    <div id="carreira-resumo-conteudo"></div>
+                </div>
+                <div class="card" id="carreira-transferencias" style="display:none;">
+                    <h3>💱 Transferências</h3>
+                    <div id="transferencias-conteudo"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tela" id="tela-liga">
+            <div class="card">
+                <h3>🏆 Campeonato</h3>
+                <select id="liga-select" onchange="carregarLiga()">
+                    <option value="brasileirao">🇧🇷 Brasileirão (38 rodadas)</option>
+                    <option value="premier">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League (38 rodadas)</option>
+                    <option value="laliga">🇪🇸 La Liga (38 rodadas)</option>
+                    <option value="seriea">🇮🇹 Serie A (38 rodadas)</option>
+                    <option value="bundesliga">🇩🇪 Bundesliga (34 rodadas)</option>
+                    <option value="ligue1">🇫🇷 Ligue 1 (34 rodadas)</option>
+                </select>
+                <div class="tabela-scroll" id="liga-tabela"></div>
+                <div class="grid-2" style="margin-top:5px;">
+                    <button class="btn btn-green" onclick="simRodada()">📅 Rodada</button>
+                    <button class="btn btn-gold" onclick="simLigaInteira()">⚡ Liga Inteira</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tela" id="tela-torneio">
+            <div class="card">
+                <h3>🥇 Torneio</h3>
+                <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;">
+                    <button class="btn btn-blue btn-sm" onclick="mostrarSelecaoManual()">✏️ Escolher Times</button>
+                    <button class="btn btn-green btn-sm" onclick="sortearTimesAutomaticamente()">🎲 Sortear
+                        Times</button>
+                    <button class="btn btn-gold btn-sm" onclick="simularTorneioCompleto()" id="btn-torneio-completo"
+                        style="display:none;">⚡ Simular Torneio Completo</button>
+                </div>
+                <div id="torneio-selecao"></div>
+                <div id="torneio-conteudo"></div>
+            </div>
+        </div>
+
+        <div class="tela" id="tela-editor">
+            <div class="card">
+                <h3>✏️ Editor</h3>
+                <select id="editor-time-select" onchange="carregarEditor()"></select>
+                <div id="editor-info"></div>
+            </div>
+        </div>
+
+        <div class="tela" id="tela-criar">
+            <div class="card">
+                <h3>🛠️ Criar Time</h3>
+                <input id="novo-nome" placeholder="Nome do time">
+                <input type="number" id="novo-over" value="78" min="50" max="95">
+                <select id="novo-liga">
+                    <option value="brasileirao">Brasileirão</option>
+                    <option value="premier">Premier League</option>
+                    <option value="laliga">La Liga</option>
+                    <option value="seriea">Serie A</option>
+                    <option value="bundesliga">Bundesliga</option>
+                    <option value="ligue1">Ligue 1</option>
+                </select>
+                <button class="btn btn-gold" onclick="criarTime()" style="margin-top:5px;">✅ Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const POSICOES = ['GOL', 'LD', 'ZAG', 'LE', 'VOL', 'MC', 'MEI', 'MD', 'ME', 'SA', 'PE', 'PD', 'CA'];
+        const ligasData = { brasileirao: { nome: 'Brasileirão', pais: '🇧🇷', totalRodadas: 38, rebaixados: 4 }, premier: { nome: 'Premier League', pais: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', totalRodadas: 38, rebaixados: 3 }, laliga: { nome: 'La Liga', pais: '🇪🇸', totalRodadas: 38, rebaixados: 3 }, seriea: { nome: 'Serie A', pais: '🇮🇹', totalRodadas: 38, rebaixados: 3 }, bundesliga: { nome: 'Bundesliga', pais: '🇩🇪', totalRodadas: 34, rebaixados: 2 }, ligue1: { nome: 'Ligue 1', pais: '🇫🇷', totalRodadas: 34, rebaixados: 2 } };
+        const timesPorLiga = { brasileirao: ['Flamengo', 'Palmeiras', 'Botafogo', 'Atlético Mineiro', 'São Paulo', 'Internacional', 'Fluminense', 'Grêmio', 'Corinthians', 'Santos', 'Cruzeiro', 'Vasco da Gama', 'Bahia', 'Fortaleza', 'Athletico Paranaense', 'Red Bull Bragantino', 'Cuiabá', 'Goiás', 'Coritiba', 'América Mineiro'], premier: ['Manchester City', 'Liverpool', 'Arsenal', 'Chelsea', 'Manchester United', 'Tottenham', 'Newcastle', 'Aston Villa', 'Brighton', 'West Ham', 'Everton', 'Fulham', 'Brentford', 'Crystal Palace', 'Wolves', 'Nottingham Forest', 'Bournemouth', 'Burnley', 'Sheffield United', 'Luton Town'], laliga: ['Real Madrid', 'Barcelona', 'Atlético de Madrid', 'Real Sociedad', 'Villarreal', 'Real Betis', 'Athletic Club', 'Valencia', 'Sevilla', 'Osasuna', 'Getafe', 'Celta de Vigo', 'Mallorca', 'Almería', 'Cádiz', 'Granada', 'Las Palmas', 'Girona', 'Rayo Vallecano', 'Alavés'], seriea: ['Juventus', 'Inter', 'Milan', 'Napoli', 'Roma', 'Lazio', 'Atalanta', 'Fiorentina', 'Torino', 'Bologna', 'Udinese', 'Genoa', 'Monza', 'Lecce', 'Empoli', 'Salernitana', 'Cagliari', 'Hellas Verona', 'Sassuolo', 'Frosinone'], bundesliga: ['Bayern de Munique', 'Borussia Dortmund', 'RB Leipzig', 'Bayer Leverkusen', 'Wolfsburg', 'Eintracht Frankfurt', 'Hoffenheim', 'Werder Bremen', 'Freiburg', 'Union Berlin', 'Augsburg', 'Mainz 05', 'Bochum', 'Heidenheim', 'Darmstadt', 'Stuttgart', 'Gladbach', 'Köln', 'Schalke 04', 'Hertha Berlin'], ligue1: ['PSG', 'Olympique de Marseille', 'Lyon', 'Monaco', 'Lille', 'Nice', 'Rennes', 'Reims', 'Montpellier', 'Strasbourg', 'Brest', 'Clermont', 'Lorient', 'Toulouse', 'Le Havre', 'Metz', 'Nantes', 'Angers', 'Auxerre', 'Ajaccio'] };
+        const overallsPorLiga = { brasileirao: [87, 85, 84, 83, 82, 81, 81, 80, 79, 78, 77, 76, 76, 77, 78, 79, 74, 73, 72, 73], premier: [93, 90, 88, 86, 85, 84, 83, 81, 80, 79, 78, 77, 76, 75, 76, 74, 73, 72, 71, 70], laliga: [92, 90, 87, 83, 82, 81, 82, 79, 80, 77, 76, 76, 75, 73, 72, 71, 70, 84, 75, 74], seriea: [88, 86, 85, 84, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67], bundesliga: [91, 89, 87, 86, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69], ligue1: [90, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67] };
+
+        let todosTimes = [];
+        let carreira = null;
+        let torneioState = { grupos: [], oitavas: [], quartas: [], semis: [], final: [], campeao: null, faseAtual: 'grupos', resultados: {}, timesSelecionados: [] };
+        let ligaState = { liga: 'brasileirao', tabela: {}, rodada: 1, totalRodadas: 38 };
+
+        function criarTimes() { todosTimes = []; Object.keys(timesPorLiga).forEach(function (liga) { timesPorLiga[liga].forEach(function (nome, indice) { const overalls = overallsPorLiga[liga] || []; const overallBase = overalls[indice] || 70; todosTimes.push({ nome: nome, liga: liga, overall: overallBase, jogadores: gerarJogadores(overallBase), tecnico: 'Técnico ' + nome, estadio: 'Estádio ' + nome, formacao: '4-4-2', orcamento: 50000000 + overallBase * 2000000 }); }); }); }
+        function gerarJogadores(overallBase) { const jogadores = []; for (let i = 0; i < 23; i++) { const variacao = Math.floor(Math.random() * 14) - 7; const overallFinal = Math.max(50, Math.min(95, overallBase + variacao)); jogadores.push({ id: 'j_' + Date.now() + '_' + i + '_' + Math.random().toString(36).slice(2, 5), nome: 'Jogador ' + (i + 1), posicao: POSICOES[Math.floor(Math.random() * POSICOES.length)], overall: overallFinal, numero: i + 1, gols: 0, assistencias: 0, jogos: 0, lesionado: false, lesaoTempo: 0, valor: Math.round(overallFinal * 500000) }); } return jogadores.sort(function (a, b) { return b.overall - a.overall; }); }
+        function getOverallTime(nome) { const time = todosTimes.find(function (t) { return t.nome === nome; }); if (!time) return 70; const disponiveis = time.jogadores.filter(function (j) { return !j.lesionado; }); if (disponiveis.length === 0) return 70; const soma = disponiveis.reduce(function (s, j) { return s + j.overall; }, 0); return Math.round(soma / disponiveis.length); }
+        function popularSelects() { const nomes = todosTimes.map(function (t) { return t.nome; }).sort(); const ids = ['jr-casa', 'jr-visitante', 'carreira-time-select', 'editor-time-select']; ids.forEach(function (id) { const select = document.getElementById(id); if (!select) return; select.innerHTML = '<option value="">-- Selecione (' + nomes.length + ' times) --</option>'; nomes.forEach(function (nome) { const opt = document.createElement('option'); opt.value = nome; opt.textContent = nome + ' (OVR: ' + getOverallTime(nome) + ')'; select.appendChild(opt); }); }); }
+        document.querySelectorAll('#nav-menu button').forEach(function (btn) { btn.addEventListener('click', function () { document.querySelectorAll('#nav-menu button').forEach(function (b) { b.classList.remove('ativo'); }); this.classList.add('ativo'); document.querySelectorAll('.tela').forEach(function (t) { t.classList.remove('ativa'); }); document.getElementById(this.getAttribute('data-tela')).classList.add('ativa'); if (this.getAttribute('data-tela') === 'tela-liga') carregarLiga(); if (this.getAttribute('data-tela') === 'tela-torneio') mostrarSelecaoManual(); if (this.getAttribute('data-tela') === 'tela-editor') carregarEditor(); }); });
+
+        function jogarRapido() { const casa = document.getElementById('jr-casa').value; const vis = document.getElementById('jr-visitante').value; if (!casa || !vis || casa === vis) return alert('Selecione dois times diferentes!'); const gf = Math.floor(Math.random() * 4), gc = Math.floor(Math.random() * 4); document.getElementById('jr-resultado').innerHTML = '<div class="info-box" style="text-align:center;"><p style="font-size:2em;font-weight:bold;">' + casa + ' ' + gf + ' × ' + gc + ' ' + vis + '</p><p>' + (gf > gc ? casa + ' venceu!' : gc > gf ? vis + ' venceu!' : 'Empate!') + '</p></div>'; }
+
+        // ==================== CARREIRA (APENAS LIGA) ====================
+        function iniciarCarreira() {
+            const timeNome = document.getElementById('carreira-time-select').value;
+            if (!timeNome) return alert('Selecione um time!');
+            const time = todosTimes.find(function (t) { return t.nome === timeNome; });
+            const liga = ligasData[time.liga];
+            const timesDaLiga = todosTimes.filter(function (t) { return t.liga === time.liga; });
+
+            carreira = { timeNome: timeNome, liga: time.liga, temporada: 1, orcamento: time.orcamento, rodada: 1, totalRodadas: liga.totalRodadas, tabela: {}, timesDaLiga: timesDaLiga, temporadaEncerrada: false };
+
+            timesDaLiga.forEach(function (t) { carreira.tabela[t.nome] = { pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }; });
+
+            document.getElementById('carreira-inicio').style.display = 'none';
+            document.getElementById('carreira-painel').style.display = 'block';
+            document.getElementById('carreira-temporada-num').textContent = '1';
+            document.getElementById('carreira-nome').textContent = timeNome;
+            document.getElementById('carreira-orcamento').textContent = (carreira.orcamento / 1000000).toFixed(1) + 'M';
+            document.getElementById('carreira-total-rodadas').textContent = carreira.totalRodadas;
+            document.getElementById('carreira-transferencias').style.display = 'none';
+            document.getElementById('carreira-resumo').style.display = 'none';
+            document.getElementById('btn-proxima-temporada').style.display = 'none';
+            atualizarTabelaCarreira();
+        }
+
+        function atualizarTabelaCarreira() {
+            const nomes = Object.keys(carreira.tabela).sort(function (a, b) { return carreira.tabela[b].pts - carreira.tabela[a].pts; });
+            let html = '<table><tr><th>#</th><th>Time</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th></tr>';
+            nomes.forEach(function (nome, i) { const d = carreira.tabela[nome]; const destaque = nome === carreira.timeNome ? ' style="background:#1a3a1a;"' : ''; html += '<tr' + destaque + '><td>' + (i + 1) + '</td><td>' + nome + '</td><td><b>' + d.pts + '</b></td><td>' + d.j + '</td><td>' + d.v + '</td><td>' + d.e + '</td><td>' + d.d + '</td><td>' + d.gp + '</td><td>' + d.gc + '</td></tr>'; });
+            html += '</table>';
+            document.getElementById('carreira-tabela').innerHTML = html;
+            document.getElementById('carreira-rodada').textContent = carreira.rodada;
+        }
+
+        function simularProximoJogo() {
+            if (!carreira || carreira.temporadaEncerrada) return alert('Temporada encerrada!');
+            if (carreira.rodada > carreira.totalRodadas) { finalizarTemporada(); return; }
+
+            const times = carreira.timesDaLiga;
+            for (let i = 0; i < times.length; i += 2) {
+                if (i + 1 >= times.length) break;
+                const a = times[i], b = times[i + 1];
+                const gf = Math.floor(Math.random() * 4), gc = Math.floor(Math.random() * 4);
+                carreira.tabela[a.nome].j++; carreira.tabela[a.nome].gp += gf; carreira.tabela[a.nome].gc += gc;
+                carreira.tabela[b.nome].j++; carreira.tabela[b.nome].gp += gc; carreira.tabela[b.nome].gc += gf;
+                if (gf > gc) { carreira.tabela[a.nome].v++; carreira.tabela[a.nome].pts += 3; carreira.tabela[b.nome].d++; }
+                else if (gf === gc) { carreira.tabela[a.nome].e++; carreira.tabela[a.nome].pts += 1; carreira.tabela[b.nome].e++; carreira.tabela[b.nome].pts += 1; }
+                else { carreira.tabela[b.nome].v++; carreira.tabela[b.nome].pts += 3; carreira.tabela[a.nome].d++; }
+            }
+            carreira.rodada++;
+            atualizarTabelaCarreira();
+
+            if (carreira.rodada > carreira.totalRodadas) {
+                finalizarTemporada();
+            }
+        }
+
+        function simularTemporadaCompleta() {
+            while (carreira.rodada <= carreira.totalRodadas) {
+                simularProximoJogo();
+            }
+            finalizarTemporada();
+        }
+
+        function finalizarTemporada() {
+            carreira.temporadaEncerrada = true;
+            document.getElementById('btn-proxima-temporada').style.display = 'block';
+
+            const nomes = Object.keys(carreira.tabela).sort(function (a, b) { return carreira.tabela[b].pts - carreira.tabela[a].pts; });
+            const posicao = nomes.indexOf(carreira.timeNome) + 1;
+
+            mostrarResumoTemporada(posicao);
+        }
+
+        function mostrarResumoTemporada(posicao) {
+            const resumoDiv = document.getElementById('carreira-resumo');
+            resumoDiv.style.display = 'block';
+
+            let html = '<div class="resumo-temporada">';
+            html += '<h4 style="color:#f0c040;">📋 Resumo da Temporada ' + carreira.temporada + '</h4>';
+            html += '<p><strong>Posição na Liga:</strong> ' + posicao + 'º lugar</p>';
+            html += '<p><strong>Pontos:</strong> ' + carreira.tabela[carreira.timeNome].pts + '</p>';
+            html += '<p><strong>Vitórias:</strong> ' + carreira.tabela[carreira.timeNome].v + ' | <strong>Empates:</strong> ' + carreira.tabela[carreira.timeNome].e + ' | <strong>Derrotas:</strong> ' + carreira.tabela[carreira.timeNome].d + '</p>';
+            html += '<p><strong>Gols Pró:</strong> ' + carreira.tabela[carreira.timeNome].gp + ' | <strong>Gols Contra:</strong> ' + carreira.tabela[carreira.timeNome].gc + '</p>';
+
+            if (posicao === 1) {
+                html += '<p style="color:#f0c040;font-weight:bold;">🏆 CAMPEÃO DA LIGA!</p>';
+            } else if (posicao <= 4) {
+                html += '<p>Classificado para competições continentais.</p>';
+            } else if (posicao >= carreira.timesDaLiga.length - ligasData[carreira.liga].rebaixados + 1) {
+                html += '<p style="color:red;">Rebaixado!</p>';
+            }
+
+            html += '</div>';
+            document.getElementById('carreira-resumo-conteudo').innerHTML = html;
+        }
+
+        function proximaTemporada() {
+            carreira.temporada++;
+            carreira.rodada = 1;
+            carreira.temporadaEncerrada = false;
+            carreira.orcamento += Math.floor(Math.random() * 20000000) + 5000000;
+            carreira.tabela = {};
+            carreira.timesDaLiga.forEach(function (t) { carreira.tabela[t.nome] = { pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }; });
+
+            document.getElementById('carreira-temporada-num').textContent = carreira.temporada;
+            document.getElementById('carreira-orcamento').textContent = (carreira.orcamento / 1000000).toFixed(1) + 'M';
+            document.getElementById('btn-proxima-temporada').style.display = 'none';
+            document.getElementById('carreira-transferencias').style.display = 'none';
+            document.getElementById('carreira-resumo').style.display = 'none';
+
+            atualizarTabelaCarreira();
+        }
+
+        function encerrarTemporada() { if (!carreira) return; carreira.temporadaEncerrada = true; abrirTransferencias(); finalizarTemporada(); }
+        function abrirTransferencias() { if (!carreira) return; const meuTime = todosTimes.find(function (t) { return t.nome === carreira.timeNome; }); const outrosTimes = todosTimes.filter(function (t) { return t.nome !== carreira.timeNome; }); outrosTimes.forEach(function (time) { time.jogadores.forEach(function (jogador) { jogador.disponivelParaTransferencia = Math.random() < 0.3; }); }); let html = '<div class="grid-2">'; html += '<div><h4 style="color:#f0c040;">📤 Vender</h4><div class="tabela-scroll" style="max-height:250px;"><table><tr><th>#</th><th>Jogador</th><th>OVR</th><th>Valor</th><th></th></tr>'; meuTime.jogadores.forEach(function (j) { html += '<tr><td>' + j.numero + '</td><td>' + j.nome + '</td><td>' + j.overall + '</td><td>€' + (j.valor / 1000000).toFixed(1) + 'M</td><td><button class="btn btn-sm btn-red" onclick="venderJogador(\'' + j.id + '\')">Vender</button></td></tr>'; }); html += '</table></div></div>'; html += '<div><h4 style="color:#f0c040;">📥 Comprar</h4><div class="tabela-scroll" style="max-height:250px;"><table><tr><th>Time</th><th>Jogador</th><th>OVR</th><th>Valor</th><th></th></tr>'; outrosTimes.forEach(function (time) { time.jogadores.filter(function (j) { return j.disponivelParaTransferencia; }).forEach(function (j) { html += '<tr><td>' + time.nome + '</td><td>' + j.nome + '</td><td>' + j.overall + '</td><td>€' + (j.valor / 1000000).toFixed(1) + 'M</td><td><button class="btn btn-sm btn-green" onclick="comprarJogador(\'' + j.id + '\',\'' + time.nome + '\')">Comprar</button></td></tr>'; }); }); html += '</table></div></div></div>'; document.getElementById('carreira-transferencias').style.display = 'block'; document.getElementById('transferencias-conteudo').innerHTML = html; }
+        function venderJogador(jogadorId) { const meuTime = todosTimes.find(function (t) { return t.nome === carreira.timeNome; }); const idx = meuTime.jogadores.findIndex(function (j) { return j.id === jogadorId; }); if (idx === -1) return; const jogador = meuTime.jogadores[idx]; carreira.orcamento += jogador.valor; meuTime.jogadores.splice(idx, 1); document.getElementById('carreira-orcamento').textContent = (carreira.orcamento / 1000000).toFixed(1) + 'M'; abrirTransferencias(); }
+        function comprarJogador(jogadorId, timeOrigemNome) { const timeOrigem = todosTimes.find(function (t) { return t.nome === timeOrigemNome; }); const idx = timeOrigem.jogadores.findIndex(function (j) { return j.id === jogadorId; }); if (idx === -1) return; const jogador = timeOrigem.jogadores[idx]; if (carreira.orcamento < jogador.valor) return alert('Orçamento insuficiente!'); carreira.orcamento -= jogador.valor; timeOrigem.jogadores.splice(idx, 1); const meuTime = todosTimes.find(function (t) { return t.nome === carreira.timeNome; }); jogador.numero = Math.floor(Math.random() * 50) + 1; meuTime.jogadores.push(jogador); document.getElementById('carreira-orcamento').textContent = (carreira.orcamento / 1000000).toFixed(1) + 'M'; abrirTransferencias(); }
+
+        // ==================== LIGA ====================
+        function carregarLiga() { const ligaSelecionada = document.getElementById('liga-select').value; ligaState.liga = ligaSelecionada; ligaState.totalRodadas = ligasData[ligaSelecionada].totalRodadas; ligaState.rodada = 1; const timesDaLiga = todosTimes.filter(function (t) { return t.liga === ligaSelecionada; }); ligaState.tabela = {}; timesDaLiga.forEach(function (t) { ligaState.tabela[t.nome] = { pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }; }); atualizarTabelaLiga(); }
+        function atualizarTabelaLiga() { const nomes = Object.keys(ligaState.tabela).sort(function (a, b) { return ligaState.tabela[b].pts - ligaState.tabela[a].pts; }); let html = '<table><tr><th>#</th><th>Time</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th></tr>'; nomes.forEach(function (nome, i) { const d = ligaState.tabela[nome]; let badge = ''; if (i < 4) badge = ' <span class="badge badge-green">LIB</span>'; if (i >= nomes.length - ligasData[ligaState.liga].rebaixados) badge = ' <span class="badge badge-red">REB</span>'; html += '<tr><td>' + (i + 1) + '</td><td>' + nome + badge + '</td><td><b>' + d.pts + '</b></td><td>' + d.j + '</td><td>' + d.v + '</td><td>' + d.e + '</td><td>' + d.d + '</td><td>' + d.gp + '</td><td>' + d.gc + '</td></tr>'; }); html += '</table>'; document.getElementById('liga-tabela').innerHTML = html; }
+        function simRodada() { if (ligaState.rodada > ligaState.totalRodadas) return; const nomes = Object.keys(ligaState.tabela); for (let i = 0; i < nomes.length; i += 2) { if (i + 1 >= nomes.length) break; const a = nomes[i], b = nomes[i + 1]; const gf = Math.floor(Math.random() * 4), gc = Math.floor(Math.random() * 4); ligaState.tabela[a].j++; ligaState.tabela[a].gp += gf; ligaState.tabela[a].gc += gc; ligaState.tabela[b].j++; ligaState.tabela[b].gp += gc; ligaState.tabela[b].gc += gf; if (gf > gc) { ligaState.tabela[a].v++; ligaState.tabela[a].pts += 3; ligaState.tabela[b].d++; } else if (gf === gc) { ligaState.tabela[a].e++; ligaState.tabela[a].pts += 1; ligaState.tabela[b].e++; ligaState.tabela[b].pts += 1; } else { ligaState.tabela[b].v++; ligaState.tabela[b].pts += 3; ligaState.tabela[a].d++; } } ligaState.rodada++; atualizarTabelaLiga(); }
+        function simLigaInteira() { while (ligaState.rodada <= ligaState.totalRodadas) simRodada(); }
+
+        // ==================== TORNEIO ====================
+        function mostrarSelecaoManual() { const nomes = todosTimes.map(function (t) { return t.nome; }).sort(); let html = '<div style="margin-bottom:8px;"><p style="font-size:.75em;color:#aaa;">Selecione 32 times (4 por grupo):</p><div class="grid-2">'; for (let g = 0; g < 8; g++) { html += '<div><label><strong>Grupo ' + String.fromCharCode(65 + g) + '</strong></label>'; for (let i = 0; i < 4; i++) { html += '<select id="torneio-grupo-' + g + '-' + i + '" style="font-size:.7em;padding:5px;"><option value="">-- Time ' + (i + 1) + ' --</option>'; nomes.forEach(function (nome) { html += '<option value="' + nome + '">' + nome + '</option>'; }); html += '</select>'; } html += '</div>'; } html += '</div><button class="btn btn-green" onclick="criarTorneioComSelecaoManual()">✅ Criar Torneio</button></div>'; document.getElementById('torneio-selecao').innerHTML = html; document.getElementById('torneio-conteudo').innerHTML = ''; document.getElementById('btn-torneio-completo').style.display = 'none'; }
+        function sortearTimesAutomaticamente() { const times = todosTimes.map(function (t) { return t.nome; }).sort(function () { return Math.random() - 0.5; }).slice(0, 32); criarTorneioComTimes(times); }
+        function criarTorneioComSelecaoManual() { const timesSelecionados = []; for (let g = 0; g < 8; g++) { for (let i = 0; i < 4; i++) { const select = document.getElementById('torneio-grupo-' + g + '-' + i); if (select && select.value) timesSelecionados.push(select.value); } } if (timesSelecionados.length !== 32) return alert('Selecione exatamente 32 times!'); criarTorneioComTimes(timesSelecionados); }
+        function criarTorneioComTimes(times) { torneioState = { grupos: [], oitavas: [], quartas: [], semis: [], final: [], campeao: null, faseAtual: 'grupos', resultados: {}, timesSelecionados: times }; for (let g = 0; g < 8; g++) { const grupo = { nome: String.fromCharCode(65 + g), times: times.slice(g * 4, g * 4 + 4), tabela: {}, jogos: [] }; grupo.times.forEach(function (time) { grupo.tabela[time] = { pts: 0, j: 0, v: 0, e: 0, d: 0, gp: 0, gc: 0 }; }); torneioState.grupos.push(grupo); } document.getElementById('btn-torneio-completo').style.display = 'block'; atualizarTorneio(); }
+        function simularTorneioCompleto() { if (torneioState.faseAtual === 'grupos') simularFaseGrupos(); if (torneioState.faseAtual === 'oitavas') simularOitavas(); if (torneioState.faseAtual === 'quartas') simularQuartas(); if (torneioState.faseAtual === 'semis') simularSemis(); if (torneioState.faseAtual === 'final') simularFinal(); }
+        function simularFaseGrupos() { if (torneioState.faseAtual !== 'grupos') return; torneioState.grupos.forEach(function (grupo) { const times = grupo.times; for (let i = 0; i < times.length; i++) { for (let j = i + 1; j < times.length; j++) { simularJogoGrupo(grupo, times[i], times[j]); simularJogoGrupo(grupo, times[j], times[i]); } } }); torneioState.oitavas = []; torneioState.grupos.forEach(function (grupo) { const classificados = grupo.times.sort(function (a, b) { return grupo.tabela[b].pts - grupo.tabela[a].pts; }).slice(0, 2); torneioState.oitavas.push({ time: classificados[0] }); torneioState.oitavas.push({ time: classificados[1] }); }); torneioState.faseAtual = 'oitavas'; torneioState.resultados.oitavas = []; atualizarTorneio(); }
+        function simularJogoGrupo(grupo, timeCasa, timeFora) { const gf = Math.floor(Math.random() * 4), gc = Math.floor(Math.random() * 4); grupo.jogos.push({ timeCasa: timeCasa, timeFora: timeFora, golsCasa: gf, golsFora: gc }); grupo.tabela[timeCasa].j++; grupo.tabela[timeCasa].gp += gf; grupo.tabela[timeCasa].gc += gc; grupo.tabela[timeFora].j++; grupo.tabela[timeFora].gp += gc; grupo.tabela[timeFora].gc += gf; if (gf > gc) { grupo.tabela[timeCasa].v++; grupo.tabela[timeCasa].pts += 3; grupo.tabela[timeFora].d++; } else if (gf === gc) { grupo.tabela[timeCasa].e++; grupo.tabela[timeCasa].pts += 1; grupo.tabela[timeFora].e++; grupo.tabela[timeFora].pts += 1; } else { grupo.tabela[timeFora].v++; grupo.tabela[timeFora].pts += 3; grupo.tabela[timeCasa].d++; } }
+        function simularOitavas() { if (torneioState.faseAtual !== 'oitavas') return; const embaralhados = torneioState.oitavas.sort(function () { return Math.random() - 0.5; }); torneioState.quartas = []; torneioState.resultados.oitavas = []; for (let i = 0; i < embaralhados.length; i += 2) { const timeA = embaralhados[i].time, timeB = embaralhados[i + 1].time; const resultado = simularMataMata(timeA, timeB); torneioState.quartas.push(resultado.vencedor); torneioState.resultados.oitavas.push(resultado); } torneioState.faseAtual = 'quartas'; atualizarTorneio(); }
+        function simularQuartas() { if (torneioState.faseAtual !== 'quartas') return; torneioState.semis = []; torneioState.resultados.quartas = []; for (let i = 0; i < torneioState.quartas.length; i += 2) { const timeA = torneioState.quartas[i], timeB = torneioState.quartas[i + 1]; const resultado = simularMataMata(timeA, timeB); torneioState.semis.push(resultado.vencedor); torneioState.resultados.quartas.push(resultado); } torneioState.faseAtual = 'semis'; atualizarTorneio(); }
+        function simularSemis() { if (torneioState.faseAtual !== 'semis') return; torneioState.final = []; torneioState.resultados.semis = []; for (let i = 0; i < torneioState.semis.length; i += 2) { const timeA = torneioState.semis[i], timeB = torneioState.semis[i + 1]; const resultado = simularMataMata(timeA, timeB); torneioState.final.push(resultado.vencedor); torneioState.resultados.semis.push(resultado); } torneioState.faseAtual = 'final'; atualizarTorneio(); }
+        function simularMataMata(timeA, timeB) { const gf1 = Math.floor(Math.random() * 4), gc1 = Math.floor(Math.random() * 4); const gf2 = Math.floor(Math.random() * 4), gc2 = Math.floor(Math.random() * 4); const totalA = gf1 + gc2; const totalB = gc1 + gf2; let vencedor, placar; if (totalA > totalB) { vencedor = timeA; placar = '(' + gf1 + '-' + gc1 + ' / ' + gf2 + '-' + gc2 + ') Total: ' + totalA + '-' + totalB; } else if (totalB > totalA) { vencedor = timeB; placar = '(' + gf1 + '-' + gc1 + ' / ' + gf2 + '-' + gc2 + ') Total: ' + totalA + '-' + totalB; } else { const penA = Math.floor(Math.random() * 5), penB = Math.floor(Math.random() * 5); if (penA === penB) penA++; vencedor = penA > penB ? timeA : timeB; placar = '(' + gf1 + '-' + gc1 + ' / ' + gf2 + '-' + gc2 + ') Total: ' + totalA + '-' + totalB + ' (' + penA + 'x' + penB + ' pênaltis)'; } return { timeA: timeA, timeB: timeB, placar: placar, vencedor: vencedor }; }
+        function simularFinal() { if (torneioState.faseAtual !== 'final') return; if (torneioState.final.length < 2) return; const timeA = torneioState.final[0], timeB = torneioState.final[1]; const gf = Math.floor(Math.random() * 4), gc = Math.floor(Math.random() * 4); let vencedor, placar; if (gf > gc) { vencedor = timeA; placar = gf + '-' + gc; } else if (gc > gf) { vencedor = timeB; placar = gf + '-' + gc; } else { const penA = Math.floor(Math.random() * 5), penB = Math.floor(Math.random() * 5); if (penA === penB) penA++; vencedor = penA > penB ? timeA : timeB; placar = gf + '-' + gc + ' (' + penA + 'x' + penB + ' pênaltis)'; } torneioState.campeao = vencedor; torneioState.resultados.final = { timeA: timeA, timeB: timeB, placar: placar, vencedor: vencedor }; torneioState.faseAtual = 'concluido'; document.getElementById('btn-torneio-completo').style.display = 'none'; atualizarTorneio(); }
+        function atualizarTorneio() { let html = ''; torneioState.grupos.forEach(function (grupo) { html += '<div class="grupo-card"><h4>Grupo ' + grupo.nome + '</h4>'; if (grupo.jogos.length > 0) { html += '<div style="margin-bottom:5px;">'; grupo.jogos.forEach(function (jogo) { html += '<div class="resultado-partida">' + jogo.timeCasa + ' ' + jogo.golsCasa + ' × ' + jogo.golsFora + ' ' + jogo.timeFora + '</div>'; }); html += '</div>'; } html += '<table><tr><th>Time</th><th>P</th><th>J</th><th>V</th></tr>'; const classificados = grupo.times.sort(function (a, b) { return grupo.tabela[b].pts - grupo.tabela[a].pts; }); classificados.forEach(function (time, i) { const d = grupo.tabela[time]; const marcado = i < 2 && torneioState.faseAtual !== 'grupos' ? ' style="background:#1a3a1a;"' : ''; html += '<tr' + marcado + '><td>' + time + '</td><td><b>' + d.pts + '</b></td><td>' + d.j + '</td><td>' + d.v + '</td></tr>'; }); html += '</table></div>'; }); if (torneioState.faseAtual === 'grupos') { html += '<button class="btn btn-green" onclick="simularFaseGrupos()" style="width:100%;">▶️ Simular Fase de Grupos</button>'; } else { html += '<div style="margin-top:8px;">'; if (torneioState.resultados.oitavas && torneioState.resultados.oitavas.length > 0) { html += '<p><strong>Oitavas:</strong></p>'; torneioState.resultados.oitavas.forEach(function (r) { html += '<div class="resultado-partida">' + r.timeA + ' × ' + r.timeB + ' → ' + r.placar + ' → <b>' + r.vencedor + '</b></div>'; }); } if (torneioState.resultados.quartas && torneioState.resultados.quartas.length > 0) { html += '<p><strong>Quartas:</strong></p>'; torneioState.resultados.quartas.forEach(function (r) { html += '<div class="resultado-partida">' + r.timeA + ' × ' + r.timeB + ' → ' + r.placar + ' → <b>' + r.vencedor + '</b></div>'; }); } if (torneioState.resultados.semis && torneioState.resultados.semis.length > 0) { html += '<p><strong>Semis:</strong></p>'; torneioState.resultados.semis.forEach(function (r) { html += '<div class="resultado-partida">' + r.timeA + ' × ' + r.timeB + ' → ' + r.placar + ' → <b>' + r.vencedor + '</b></div>'; }); } if (torneioState.resultados.final) { html += '<p><strong>Final:</strong></p><div class="resultado-partida" style="background:#1a3a1a;">' + torneioState.resultados.final.timeA + ' ' + torneioState.resultados.final.placar + ' ' + torneioState.resultados.final.timeB + ' → <b style="color:#f0c040;">🏆 ' + torneioState.resultados.final.vencedor + '</b></div>'; } if (torneioState.faseAtual === 'oitavas') html += '<button class="btn btn-green" onclick="simularOitavas()">▶️ Simular Oitavas</button>'; if (torneioState.faseAtual === 'quartas') html += '<button class="btn btn-green" onclick="simularQuartas()">▶️ Simular Quartas</button>'; if (torneioState.faseAtual === 'semis') html += '<button class="btn btn-green" onclick="simularSemis()">▶️ Simular Semis</button>'; if (torneioState.faseAtual === 'final') html += '<button class="btn btn-gold" onclick="simularFinal()">🏆 Disputar Final</button>'; html += '</div>'; } document.getElementById('torneio-conteudo').innerHTML = html; }
+
+        // ==================== EDITOR E CRIAR TIME ====================
+        function carregarEditor() { const nome = document.getElementById('editor-time-select').value; if (!nome) return; const time = todosTimes.find(function (t) { return t.nome === nome; }); if (!time) return; let html = '<div class="info-box"><h3 style="color:#f0c040;">Editando: ' + nome + '</h3><div class="grid-2"><div><label>Nome:</label><input id="edit-nome" value="' + time.nome + '"></div><div><label>Técnico:</label><input id="edit-tecnico" value="' + time.tecnico + '"></div><div><label>Estádio:</label><input id="edit-estadio" value="' + time.estadio + '"></div><div><label>Formação:</label><select id="edit-formacao">';['4-4-2', '4-3-3', '3-5-2', '4-2-3-1', '3-4-3', '4-2-1-3', '4-3-1-2', '3-4-1-2', '4-1-3-2'].forEach(function (f) { html += '<option value="' + f + '"' + (time.formacao === f ? ' selected' : '') + '>' + f + '</option>'; }); html += '</select></div></div><button class="btn btn-green" onclick="salvarEditor(\'' + nome + '\')">💾 Salvar Time</button><hr style="border-color:#333;margin:10px 0;"><h4 style="color:#f0c040;">👥 Jogadores (' + time.jogadores.length + ')</h4><div class="tabela-scroll" style="max-height:300px;"><table><tr><th>#</th><th>Nome</th><th>Posição</th><th>OVR</th><th></th></tr>'; time.jogadores.forEach(function (j) { html += '<tr><td><input type="number" id="jog-num-' + j.id + '" value="' + j.numero + '" style="width:50px;"></td><td><input id="jog-nome-' + j.id + '" value="' + j.nome + '" style="width:120px;"></td><td><select id="jog-pos-' + j.id + '" style="width:70px;">'; POSICOES.forEach(function (p) { html += '<option value="' + p + '"' + (j.posicao === p ? ' selected' : '') + '>' + p + '</option>'; }); html += '</select></td><td><input type="number" id="jog-over-' + j.id + '" value="' + j.overall + '" min="40" max="99" style="width:55px;"></td><td><button class="btn btn-sm btn-red" onclick="removerJogador(\'' + nome + '\',\'' + j.id + '\')">✕</button></td></tr>'; }); html += '</table></div><button class="btn btn-green" onclick="salvarJogadores(\'' + nome + '\')">💾 Salvar Jogadores</button><button class="btn btn-blue" onclick="adicionarJogador(\'' + nome + '\')">+ Adicionar</button></div>'; document.getElementById('editor-info').innerHTML = html; }
+        function salvarEditor(nomeOriginal) { const time = todosTimes.find(function (t) { return t.nome === nomeOriginal; }); if (!time) return; time.nome = document.getElementById('edit-nome').value.trim() || time.nome; time.tecnico = document.getElementById('edit-tecnico').value || time.tecnico; time.estadio = document.getElementById('edit-estadio').value || time.estadio; time.formacao = document.getElementById('edit-formacao').value; popularSelects(); alert('✅ Time salvo!'); carregarEditor(); }
+        function salvarJogadores(nomeTime) { const time = todosTimes.find(function (t) { return t.nome === nomeTime; }); if (!time) return; time.jogadores.forEach(function (j) { const nomeInput = document.getElementById('jog-nome-' + j.id); const posInput = document.getElementById('jog-pos-' + j.id); const overInput = document.getElementById('jog-over-' + j.id); const numInput = document.getElementById('jog-num-' + j.id); if (nomeInput) j.nome = nomeInput.value || j.nome; if (posInput) j.posicao = posInput.value; if (overInput) j.overall = Math.max(40, Math.min(99, parseInt(overInput.value) || j.overall)); if (numInput) j.numero = Math.max(1, Math.min(99, parseInt(numInput.value) || j.numero)); j.valor = Math.round(j.overall * 500000); }); popularSelects(); alert('✅ Jogadores salvos!'); carregarEditor(); }
+        function removerJogador(nomeTime, jogadorId) { const time = todosTimes.find(function (t) { return t.nome === nomeTime; }); if (!time) return; time.jogadores = time.jogadores.filter(function (j) { return j.id !== jogadorId; }); popularSelects(); carregarEditor(); }
+        function adicionarJogador(nomeTime) { const time = todosTimes.find(function (t) { return t.nome === nomeTime; }); if (!time) return; const numerosUsados = time.jogadores.map(function (j) { return j.numero; }); let novoNumero = 1; while (numerosUsados.includes(novoNumero)) novoNumero++; time.jogadores.push({ id: 'j_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5), nome: 'Novo Jogador', posicao: 'MEI', overall: 65, numero: novoNumero, gols: 0, assistencias: 0, jogos: 0, lesionado: false, lesaoTempo: 0, valor: Math.round(65 * 500000) }); popularSelects(); carregarEditor(); }
+        function criarTime() { const nome = document.getElementById('novo-nome').value.trim(); const over = parseInt(document.getElementById('novo-over').value) || 78; const liga = document.getElementById('novo-liga').value; if (!nome) return alert('Digite um nome!'); if (todosTimes.find(function (t) { return t.nome === nome; })) return alert('Time já existe!'); todosTimes.push({ nome: nome, liga: liga, overall: over, jogadores: gerarJogadores(over), tecnico: 'Técnico ' + nome, estadio: 'Estádio ' + nome, formacao: '4-4-2', orcamento: 50000000 + over * 2000000 }); popularSelects(); alert('✅ Time ' + nome + ' criado!'); }
+
+        function init() { criarTimes(); popularSelects(); carregarLiga(); mostrarSelecaoManual(); console.log('✅ Sistema carregado'); }
+        init();
+    </script>
+</body>
+
+</html>
